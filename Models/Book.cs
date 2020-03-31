@@ -8,5 +8,7 @@ namespace Bookworm.Models
     public class Book
     {
         public string Title { get; set; }
+        public IEnumerable<string> Authors { get; set; }
+
     }
 }
