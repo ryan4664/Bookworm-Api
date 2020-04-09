@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using Bookworm.Services;
 
 namespace Bookworm.Controllers
 {
@@ -21,13 +22,11 @@ namespace Bookworm.Controllers
     {
         static readonly HttpClient client = new HttpClient();
 
-        private readonly ILogger<WeatherForecastController> _logger;
-        private readonly IAmazonDynamoDB _dynamoClient;
+        private readonly IBooksService _booksService;
 
-        public BooksController(ILogger<WeatherForecastController> logger, IAmazonDynamoDB dynamoClient)
+        public BooksController(IBooksService booksService)
         {
-            _logger = logger;
-            _dynamoClient = dynamoClient;
+            _booksService = booksService;
         }
 
         [HttpGet("{id}")]
@@ -40,31 +39,14 @@ namespace Bookworm.Controllers
             return result;
         }
 
-        [HttpPost]
+        [HttpPost("isbn/{isbn}")]
         //[Authorize]
-        public async Task<Guid> CreateBook(Book book)
+        public async Task<Guid> CreateBook(string isbn)
         {
-            var httpResponse = await client.GetAsync("https://api.altmetric.com/v1/isbn/978-3-319-25557-6");
+            var httpResponse = await client.GetAsync(string.Format("https://api.altmetric.com/v1/isbn/{0}", isbn));
             httpResponse.EnsureSuccessStatusCode();
             var result = await httpResponse.Content.ReadAsAsync<Book>();
-            var id = Guid.NewGuid();
-
-            var item = new Dictionary<string, AttributeValue>
-            {
-                {"BookID", new AttributeValue {S = id.ToString()}},
-                {"Title", new AttributeValue {S = result.Title}},
-                {"Authors", new AttributeValue {S = string.Join(",", result.Authors)}}
-            };
-
-            var putItem = new PutItemRequest
-            {
-                TableName = "Bookworm",
-                Item = item
-            };
-
-            await _dynamoClient.PutItemAsync(putItem);
-
-            return id;
+            return await _booksService.SaveBook(result);
         }
 
     }

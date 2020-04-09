@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Amazon.DynamoDBv2;
+using Bookworm.Services;
 
 namespace Bookworm
 {
@@ -52,6 +53,11 @@ namespace Bookworm
                 options.Audience = Configuration["Auth0:Audience"];
             });
             services.AddControllers();
+
+            var options = Configuration.GetAWSOptions();
+            IAmazonDynamoDB client = options.CreateServiceClient<IAmazonDynamoDB>();
+
+            services.Add(new ServiceDescriptor(typeof(IBooksService), new BooksService(client)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
