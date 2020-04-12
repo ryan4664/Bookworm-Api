@@ -41,12 +41,9 @@ namespace Bookworm.Controllers
 
         [HttpPost("isbn/{isbn}")]
         //[Authorize]
-        public async Task<Guid> CreateBook(string isbn)
+        public async Task<Guid> CreateBook(Book book)
         {
-            var httpResponse = await client.GetAsync(string.Format("https://api.altmetric.com/v1/isbn/{0}", isbn));
-            httpResponse.EnsureSuccessStatusCode();
-            var result = await httpResponse.Content.ReadAsAsync<Book>();
-            return await _booksService.SaveBook(result);
+            return await _booksService.CreateBook(book);
         }
 
     }

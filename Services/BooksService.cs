@@ -10,7 +10,8 @@ namespace Bookworm.Services
 {
     public interface IBooksService
     {
-        Task<Guid> SaveBook(Book book);
+        Task<Guid> CreateBook(Book book);
+        Task<IEnumerable<Book>> Search(BookSearchDTO bookSearchDTO);
     }
 
     public class BooksService : IBooksService
@@ -22,26 +23,32 @@ namespace Bookworm.Services
             _dynamoClient = dynamoClient;
         }
 
-        public async Task<Guid> SaveBook(Book book)
+        public async Task<Guid> CreateBook(Book book)
         {
-            var id = Guid.NewGuid();
-
-            var item = new Dictionary<string, AttributeValue>
+            var newBookID = Guid.NewGuid();
+            var newBook = new Dictionary<string, AttributeValue>
             {
-                {"BookID", new AttributeValue {S = id.ToString()}},
+                {"BookID", new AttributeValue {S = newBookID.ToString()}},
                 {"Title", new AttributeValue {S = book.Title}},
+                {"Isbn", new AttributeValue {S = book.Isbn}},
+                {"NumberOfPages", new AttributeValue {N = book.NumberOfPages.ToString()}},
                 {"Authors", new AttributeValue {S = string.Join(",", book.Authors)}}
             };
 
             var putItem = new PutItemRequest
             {
                 TableName = "Bookworm",
-                Item = item
+                Item = newBook
             };
 
             await _dynamoClient.PutItemAsync(putItem);
             
-            return id;
+            return newBookID;
+        }
+
+        public async Task<IEnumerable<Book>> Search(BookSearchDTO bookSearchDTO)
+        {
+            return null;
         }
     }
 }

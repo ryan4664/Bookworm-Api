@@ -14,6 +14,7 @@ namespace Bookworm.Models
 
         [DataType(DataType.Date)]
         public IEnumerable<string> Authors { get; set; }
-
+        public string Isbn { get; internal set; }
+        public int NumberOfPages { get; internal set; }
     }
 }
