@@ -29,6 +29,7 @@ namespace Bookworm.Services
             var newBook = new Dictionary<string, AttributeValue>
             {
                 {"BookID", new AttributeValue {S = newBookID.ToString()}},
+                {"UserID", new AttributeValue {S = book.UserID}},
                 {"Title", new AttributeValue {S = book.Title}},
                 {"Isbn", new AttributeValue {S = book.Isbn}},
                 {"NumberOfPages", new AttributeValue {N = book.NumberOfPages.ToString()}},

@@ -39,8 +39,8 @@ namespace Bookworm.Controllers
             return result;
         }
 
-        [HttpPost("isbn/{isbn}")]
-        //[Authorize]
+        [HttpPost]
+        [Authorize]
         public async Task<Guid> CreateBook(Book book)
         {
             return await _booksService.CreateBook(book);
