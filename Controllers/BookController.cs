@@ -39,6 +39,12 @@ namespace Bookworm.Controllers
             return result;
         }
 
+        [HttpGet("user/{userID}")]
+        public async Task<IEnumerable<Book>> GetBooksByUserIDAsync(string userID)
+        {
+            return await _booksService.GetBooksByUserIDAsync(userID);
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<Guid> CreateBook(Book book)
