@@ -24,7 +24,7 @@ namespace Bookworm
         }
 
         public IConfiguration Configuration { get; }
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        readonly string MyAllowSpecificOrigins = "http://localhost:3000";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -40,7 +40,10 @@ namespace Bookworm
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:3000");
+                    builder.WithOrigins("http://localhost:3000")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
                 });
             });
             services.AddAuthentication(options =>
@@ -57,7 +60,7 @@ namespace Bookworm
             var options = Configuration.GetAWSOptions();
             IAmazonDynamoDB client = options.CreateServiceClient<IAmazonDynamoDB>();
 
-            services.Add(new ServiceDescriptor(typeof(IBooksService), new BooksService(client)));
+            services.AddScoped<IBooksService, BooksService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
