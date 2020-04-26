@@ -15,6 +15,7 @@ namespace Bookworm.Services
         Task<Guid> CreateBook(Book book);
         Task<IEnumerable<Book>> Search(BookSearchDTO bookSearchDTO);
         Task<IEnumerable<Book>> GetBooksByUserIDAsync(string userID);
+        Task DeleteBook(string bookID);
     }
 
     public class BooksService : IBooksService
@@ -60,6 +61,22 @@ namespace Bookworm.Services
             await _dynamoClient.PutItemAsync(putItem);
 
             return newBookID;
+        }
+
+        public async Task DeleteBook(string bookID)
+        {
+            var bookToDelete = new Dictionary<string, AttributeValue>
+            {
+                {"BookID", new AttributeValue {S = bookID}}
+            };
+
+            var deleteItem = new DeleteItemRequest
+            (
+                "Bookworm",
+                bookToDelete
+            );
+
+            await _dynamoClient.DeleteItemAsync(deleteItem);
         }
 
         public async Task<IEnumerable<Book>> Search(BookSearchDTO bookSearchDTO)

@@ -52,5 +52,12 @@ namespace Bookworm.Controllers
             return await _booksService.CreateBook(book);
         }
 
+        [HttpDelete("{bookID}")]
+        [Authorize]
+        public async Task DeleteBook(string bookID)
+        {
+            await _booksService.DeleteBook(bookID);
+        }
+
     }
 }
